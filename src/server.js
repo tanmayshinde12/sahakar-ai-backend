@@ -24,6 +24,14 @@ app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (_request, response) => response.json({ status: "ok", model: config.gemini.model }));
 
+// Exotel Voicebot endpoint - returns WebSocket URL for audio streaming
+app.get("/exotel/voicebot", (request, response) => {
+  const protocol = request.headers['x-forwarded-proto'] || 'http';
+  const host = request.headers.host;
+  const wsUrl = `${protocol === 'https' ? 'wss' : 'ws'}://${host}/api/phone/stream`;
+  response.json({ websocket_url: wsUrl });
+});
+
 app.post("/api/chat", async (request, response, next) => {
   try {
     const message = request.body?.message?.trim();
@@ -76,8 +84,7 @@ websocket.on("connection", (ws) => {
 server.on("upgrade", (request, socket, head) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
   if (url.pathname !== "/api/phone/stream") return socket.destroy();
-  const token = url.searchParams.get("token");
-  if (config.exotel.streamToken && token !== config.exotel.streamToken) return socket.destroy();
+  // Exotel doesn't require token authentication per implementation guide
   websocket.handleUpgrade(request, socket, head, (ws) => websocket.emit("connection", ws, request));
 });
 
