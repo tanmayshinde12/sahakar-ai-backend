@@ -19,7 +19,7 @@ const upload = multer({
   }
 });
 
-app.use(cors({ origin: config.corsOrigin.split(",").map((item) => item.trim()) }));
+app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (_request, response) => response.json({ status: "ok", model: config.gemini.model }));
