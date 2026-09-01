@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: sahakar-ai-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.7-flash
+      - key: CORS_ORIGIN
+        value: "*"
